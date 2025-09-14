@@ -1,0 +1,633 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .rounded-full {
+    border-radius: 0.2rem !important
+  }
+  .overflow-x-auto {
+    overflow-x: visible !important;
+	}
+  .btn {
+    @apply inline-flex items-center justify-center text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none shadow-sm;
+    border-radius: 0.2rem;
+  }
+  
+  .btn-primary {
+    @apply bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 shadow-md hover:shadow-lg;
+  }
+  
+  .btn-secondary {
+    @apply bg-gray-100 text-gray-900 hover:bg-gray-200 active:bg-gray-300 border border-gray-300;
+  }
+  
+  .btn-outline {
+    @apply border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 hover:border-gray-400 active:bg-gray-100;
+  }
+  
+  .btn-danger {
+    @apply bg-red-600 text-white hover:bg-red-700 active:bg-red-800 shadow-md hover:shadow-lg;
+  }
+  
+  .btn-success {
+    @apply bg-green-600 text-white hover:bg-green-700 active:bg-green-800 shadow-md hover:shadow-lg;
+  }
+  
+  .btn-sm {
+    @apply h-8 px-3 text-xs;
+  }
+  
+  .btn-md {
+    @apply h-10 px-4 py-2;
+  }
+  
+  .btn-lg {
+    @apply h-12 px-6 text-base;
+  }
+  
+  .card {
+    @apply border border-gray-200 bg-white text-gray-900 shadow-sm hover:shadow-md transition-shadow duration-200;
+    border-radius: 0.2rem;
+  }
+  
+  .input {
+    @apply flex h-10 w-full border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-50 transition-colors duration-200;
+    border-radius: 0.2rem;
+  }
+  
+  .label {
+    @apply text-sm font-medium text-gray-700 leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 mb-1 block;
+  }
+
+  /* Tipografia específica para formulários */
+  .form-title {
+    @apply text-2xl font-bold text-gray-900 leading-tight tracking-tight;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  .form-subtitle {
+    @apply text-lg font-semibold text-gray-800 leading-snug tracking-wide;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  .form-section-title {
+    @apply text-base font-semibold text-gray-800 leading-relaxed tracking-wide;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  .form-label {
+    @apply text-sm font-semibold text-gray-700 leading-tight tracking-wide mb-2 block;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  .form-label-required {
+    @apply text-sm font-semibold text-gray-700 leading-tight tracking-wide mb-2 block;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  .form-label-required::after {
+    content: ' *';
+    @apply text-red-500 font-bold;
+  }
+
+  .form-description {
+    @apply text-xs text-gray-500 leading-relaxed tracking-wide mt-1;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  .form-placeholder {
+    @apply text-sm text-gray-400 leading-normal;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  .form-error {
+    @apply text-sm text-red-600 leading-tight tracking-wide mt-1;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  .form-success {
+    @apply text-sm text-green-600 leading-tight tracking-wide mt-1;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  .form-input {
+    @apply w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.5;
+    letter-spacing: 0.025em;
+  }
+
+  .form-input:focus {
+    @apply shadow-md;
+  }
+
+  .form-input.error {
+    @apply border-red-500 focus:ring-red-500 focus:border-red-500;
+  }
+
+  .form-input.success {
+    @apply border-green-500 focus:ring-green-500 focus:border-green-500;
+  }
+
+  .form-select {
+    @apply w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.5;
+    letter-spacing: 0.025em;
+  }
+
+  .form-textarea {
+    @apply w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.5;
+    letter-spacing: 0.025em;
+    min-height: 100px;
+  }
+
+  .form-checkbox-label {
+    @apply text-sm font-medium text-gray-700 leading-tight tracking-wide cursor-pointer;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  .form-group {
+    @apply space-y-2;
+  }
+
+  .form-section {
+    @apply bg-gray-50 p-6 rounded-xl border border-gray-200 space-y-6;
+  }
+
+  .form-section-header {
+    @apply flex items-center space-x-3 pb-4 border-b border-gray-200;
+  }
+
+  .form-section-icon {
+    @apply w-5 h-5 text-gray-600;
+  }
+
+  .form-section-title {
+    @apply text-lg font-semibold text-gray-800 leading-snug tracking-wide;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  
+  /* Botões de ação modernos com duas seções */
+  .btn-action {
+    @apply relative overflow-hidden transition-all duration-200 ease-in-out hover:shadow-md;
+    width: 120px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    border: none;
+    cursor: pointer;
+    border-radius: 0.2rem;
+  }
+  
+  .btn-action::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 30%;
+    height: 100%;
+    transition: background-color 0.2s ease;
+    z-index: 1;
+  }
+  
+  .btn-action::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 30%;
+    width: 70%;
+    height: 100%;
+    transition: background-color 0.2s ease;
+    z-index: 1;
+  }
+  
+  .btn-action .icon-section {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 30%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    transition: color 0.2s ease;
+  }
+  
+  .btn-action .text-section {
+    position: absolute;
+    left: 30%;
+    top: 0;
+    width: 70%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    z-index: 2;
+    transition: color 0.2s ease;
+  }
+  
+  /* Botão de visualizar - Verde */
+  .btn-action.view::before {
+    background: #16a34a;
+  }
+  
+  .btn-action.view::after {
+    background: #22c55e;
+  }
+  
+  .btn-action.view:hover::before {
+    background: #15803d;
+  }
+  
+  .btn-action.view:hover::after {
+    background: #16a34a;
+  }
+  
+  .btn-action.view .icon-section {
+    color: white;
+  }
+  
+  /* Botão de editar - Azul */
+  .btn-action.edit::before {
+    background: #2563eb;
+  }
+  
+  .btn-action.edit::after {
+    background: #3b82f6;
+  }
+  
+  .btn-action.edit:hover::before {
+    background: #1d4ed8;
+  }
+  
+  .btn-action.edit:hover::after {
+    background: #2563eb;
+  }
+  
+  .btn-action.edit .icon-section {
+    color: white;
+  }
+  
+  /* Botão de excluir - Vermelho */
+  .btn-action.delete::before {
+    background: #dc2626;
+  }
+  
+  .btn-action.delete::after {
+    background: #ef4444;
+  }
+  
+  .btn-action.delete:hover::before {
+    background: #b91c1c;
+  }
+  
+  .btn-action.delete:hover::after {
+    background: #dc2626;
+  }
+  
+  .btn-action.delete .icon-section {
+    color: white;
+  }
+  
+  /* Botão de adicionar - Azul */
+  .btn-action.add::before {
+    background: #2563eb;
+  }
+  
+  .btn-action.add::after {
+    background: #3b82f6;
+  }
+  
+  .btn-action.add:hover::before {
+    background: #1d4ed8;
+  }
+  
+  .btn-action.add:hover::after {
+    background: #2563eb;
+  }
+  
+  .btn-action.add .icon-section {
+    color: white;
+  }
+  
+  /* Botão de filtrar - Laranja */
+  .btn-action.filter::before {
+    background: #ea580c;
+  }
+  
+  .btn-action.filter::after {
+    background: #ff9231;
+  }
+  
+  .btn-action.filter:hover::before {
+    background: #c2410c;
+  }
+  
+  .btn-action.filter:hover::after {
+    background: #ea580c;
+  }
+  
+  .btn-action.filter .icon-section {
+    color: white;
+  }
+  
+  /* Botões para modais - mesmo estilo dos botões de ação */
+  .btn-modal {
+    @apply relative overflow-hidden transition-all duration-200 ease-in-out hover:shadow-md;
+    width: 120px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    border: none;
+    cursor: pointer;
+    border-radius: 0.2rem;
+  }
+  
+  .btn-modal::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 30%;
+    height: 100%;
+    transition: background-color 0.2s ease;
+    z-index: 1;
+  }
+  
+  .btn-modal::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 30%;
+    width: 70%;
+    height: 100%;
+    transition: background-color 0.2s ease;
+    z-index: 1;
+  }
+  
+  .btn-modal .icon-section {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 30%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    transition: color 0.2s ease;
+  }
+  
+  .btn-modal .text-section {
+    position: absolute;
+    left: 30%;
+    top: 0;
+    width: 70%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    z-index: 2;
+    transition: color 0.2s ease;
+  }
+  
+  /* Botão de sucesso - Verde */
+  .btn-modal-success::before {
+    background: #16a34a;
+  }
+  
+  .btn-modal-success::after {
+    background: #22c55e;
+  }
+  
+  .btn-modal-success:hover::before {
+    background: #15803d;
+  }
+  
+  .btn-modal-success:hover::after {
+    background: #16a34a;
+  }
+  
+  .btn-modal-success .icon-section {
+    color: white;
+  }
+  
+  /* Botão de perigo - Vermelho */
+  .btn-modal-danger::before {
+    background: #dc2626;
+  }
+  
+  .btn-modal-danger::after {
+    background: #ef4444;
+  }
+  
+  .btn-modal-danger:hover::before {
+    background: #b91c1c;
+  }
+  
+  .btn-modal-danger:hover::after {
+    background: #dc2626;
+  }
+  
+  .btn-modal-danger .icon-section {
+    color: white;
+  }
+  
+  /* Animações para dropdown */
+  @keyframes slideInFromTop {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .animate-in {
+    animation: slideInFromTop 0.2s ease-out;
+  }
+  
+  .slide-in-from-top-2 {
+    animation: slideInFromTop 0.2s ease-out;
+  }
+  
+  /* Estilos para ícones do dropdown */
+  .dropdown-icon {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .dropdown-icon.edit {
+    color: #f97316; /* Orange */
+  }
+  
+  .dropdown-icon.view {
+    color: #ec4899; /* Pink */
+  }
+  
+  .dropdown-icon.address {
+    color: #ec4899; /* Pink */
+  }
+  
+  .dropdown-icon.contact {
+    color: #dc2626; /* Red */
+  }
+  
+  .dropdown-icon.delete {
+    color: #6b7280; /* Gray */
+  }
+}
+
+/* Pagination styles */
+.pagination-container {
+  background: white;
+  padding: 1rem 0;
+}
+
+.pagination-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.records-per-page {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.records-label {
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.records-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.records-select {
+  appearance: none;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 0.2rem;
+  padding: 0.25rem 1.5rem 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  color: #374151;
+  cursor: pointer;
+  min-width: 3rem;
+}
+
+.records-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.records-dropdown .dropdown-icon {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #374151;
+}
+
+.page-navigation {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.nav-button {
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 0.2rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: #3b82f6;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.nav-button:hover:not(.disabled) {
+  background: #f8fafc;
+  border-color: #3b82f6;
+}
+
+.nav-button.disabled {
+  background: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+  border-color: #e5e7eb;
+}
+
+.page-button {
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 0.2rem;
+  padding: 0.5rem;
+  font-size: 0.875rem;
+  color: #3b82f6;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  min-width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-button:hover {
+  background: #f8fafc;
+  border-color: #3b82f6;
+}
+
+.page-button.active {
+  background: #10b981;
+  color: white;
+  border-color: #10b981;
+}
+
+.page-button.active:hover {
+  background: #059669;
+  border-color: #059669;
+}
