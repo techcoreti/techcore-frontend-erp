@@ -20,6 +20,7 @@ export interface EnderecoFornecedor {
 	pais: string;
 	paisCodigo: string;
 	tipo: string[];
+	ativo: boolean;
 }
 
 // Interface para criação de endereço de fornecedor
@@ -36,6 +37,7 @@ export interface CreateEnderecoFornecedorData {
 	pais: string;
 	paisCodigo: string;
 	tipo: string[];
+	ativo: boolean;
 }
 
 class EnderecoFornecedorService {

@@ -2,11 +2,14 @@ import React, { useState } from 'react';
 import { Plus, Search, Edit, Trash2, Eye, Package } from 'lucide-react';
 import DropdownMenu from '../components/DropdownMenu';
 import Pagination from '../components/Pagination';
-import { useProdutos } from '../hooks/useApi';
+import { useProdutos, useCategoriasProdutos, useTiposProdutos, useMarcasProdutos } from '../hooks/useApi';
 import { Produto, CreateProdutoDto } from '../types/api';
 
 const Produtos: React.FC = () => {
   const { produtos, loading, error, createProduto, updateProduto, deleteProduto } = useProdutos();
+  const { categorias } = useCategoriasProdutos();
+  const { tipos } = useTiposProdutos();
+  const { marcas } = useMarcasProdutos();
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
@@ -18,6 +21,8 @@ const Produtos: React.FC = () => {
     nome: '',
     descricao: '',
     categoriaId: undefined,
+    tipoId: undefined,
+    marcaId: undefined,
     ativo: true
   });
 
@@ -47,6 +52,8 @@ const Produtos: React.FC = () => {
       nome: '',
       descricao: '',
       categoriaId: undefined,
+      tipoId: undefined,
+      marcaId: undefined,
       ativo: true
     });
     setShowCreateModal(true);
@@ -58,6 +65,8 @@ const Produtos: React.FC = () => {
       nome: produto.nome,
       descricao: produto.descricao || '',
       categoriaId: produto.categoriaId,
+      tipoId: produto.tipoId,
+      marcaId: produto.marcaId,
       ativo: produto.ativo
     });
     setShowEditModal(true);
@@ -88,6 +97,8 @@ const Produtos: React.FC = () => {
         nome: '',
         descricao: '',
         categoriaId: undefined,
+        tipoId: undefined,
+        marcaId: undefined,
         ativo: true
       });
     } catch (error) {
@@ -114,6 +125,13 @@ const Produtos: React.FC = () => {
       ...prev,
       [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
     }));
+  };
+
+  // Função auxiliar para obter o nome de uma categoria, tipo ou marca pelo ID
+  const getEntityName = (id: string | undefined, entities: any[]) => {
+    if (!id) return 'Não definido';
+    const entity = entities.find(e => e.id === id);
+    return entity ? entity.nome : 'Não encontrado';
   };
 
   return (
@@ -288,16 +306,57 @@ const Produtos: React.FC = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Categoria ID
+                    Categoria
                   </label>
-                  <input
-                    type="text"
+                  <select
                     name="categoriaId"
                     value={formData.categoriaId || ''}
                     onChange={handleInputChange}
                     className="input w-full"
-                    placeholder="ID da categoria (opcional)"
-                  />
+                  >
+                    <option value="">Selecione uma categoria (opcional)</option>
+                    {categorias.filter(cat => cat.ativo).map(categoria => (
+                      <option key={categoria.id} value={categoria.id}>
+                        {categoria.nome}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Tipo
+                  </label>
+                  <select
+                    name="tipoId"
+                    value={formData.tipoId || ''}
+                    onChange={handleInputChange}
+                    className="input w-full"
+                  >
+                    <option value="">Selecione um tipo (opcional)</option>
+                    {tipos.filter(tipo => tipo.ativo).map(tipo => (
+                      <option key={tipo.id} value={tipo.id}>
+                        {tipo.nome}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Marca
+                  </label>
+                  <select
+                    name="marcaId"
+                    value={formData.marcaId || ''}
+                    onChange={handleInputChange}
+                    className="input w-full"
+                  >
+                    <option value="">Selecione uma marca (opcional)</option>
+                    {marcas.filter(marca => marca.ativo).map(marca => (
+                      <option key={marca.id} value={marca.id}>
+                        {marca.nome}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div className="flex items-center">
                   <input
@@ -365,16 +424,57 @@ const Produtos: React.FC = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Categoria ID
+                    Categoria
                   </label>
-                  <input
-                    type="text"
+                  <select
                     name="categoriaId"
                     value={formData.categoriaId || ''}
                     onChange={handleInputChange}
                     className="input w-full"
-                    placeholder="ID da categoria (opcional)"
-                  />
+                  >
+                    <option value="">Selecione uma categoria (opcional)</option>
+                    {categorias.filter(cat => cat.ativo).map(categoria => (
+                      <option key={categoria.id} value={categoria.id}>
+                        {categoria.nome}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Tipo
+                  </label>
+                  <select
+                    name="tipoId"
+                    value={formData.tipoId || ''}
+                    onChange={handleInputChange}
+                    className="input w-full"
+                  >
+                    <option value="">Selecione um tipo (opcional)</option>
+                    {tipos.filter(tipo => tipo.ativo).map(tipo => (
+                      <option key={tipo.id} value={tipo.id}>
+                        {tipo.nome}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Marca
+                  </label>
+                  <select
+                    name="marcaId"
+                    value={formData.marcaId || ''}
+                    onChange={handleInputChange}
+                    className="input w-full"
+                  >
+                    <option value="">Selecione uma marca (opcional)</option>
+                    {marcas.filter(marca => marca.ativo).map(marca => (
+                      <option key={marca.id} value={marca.id}>
+                        {marca.nome}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div className="flex items-center">
                   <input
@@ -426,9 +526,21 @@ const Produtos: React.FC = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Categoria ID
+                  Categoria
                 </label>
-                <p className="text-gray-900">{selectedProduto.categoriaId || 'Não definida'}</p>
+                <p className="text-gray-900">{getEntityName(selectedProduto.categoriaId, categorias)}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Tipo
+                </label>
+                <p className="text-gray-900">{getEntityName(selectedProduto.tipoId, tipos)}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Marca
+                </label>
+                <p className="text-gray-900">{getEntityName(selectedProduto.marcaId, marcas)}</p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">

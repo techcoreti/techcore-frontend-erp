@@ -17,6 +17,7 @@ export interface EnderecoCliente {
 	pais: string;
 	paisCodigo: string;
 	tipo: string[];
+	ativo: boolean;
 	created_at: string;
 	updated_at: string;
 }
@@ -34,6 +35,7 @@ export interface CreateEnderecoData {
 	pais: string;
 	paisCodigo: string;
 	tipo: string[];
+	ativo: boolean;
 }
 
 class EnderecoClienteService {

@@ -5,12 +5,15 @@ import { Fornecedor } from '../services/fornecedorService';
 import FornecedorForm from '../components/Forms/FornecedorForm';
 import DropdownMenu from '../components/DropdownMenu';
 import Pagination from '../components/Pagination';
+import { useNavigate } from 'react-router-dom';
 
 const Fornecedores: React.FC = () => {
+  const navigate = useNavigate();
   const { 
     fornecedores, 
     loading, 
-    error, 
+		error, 
+		refetch,
     createFornecedor, 
     updateFornecedor, 
     deleteFornecedor,
@@ -82,12 +85,12 @@ const Fornecedores: React.FC = () => {
 
   const handleViewEnderecos = (fornecedor: Fornecedor) => {
     // Navegar para página de endereços do fornecedor
-    window.location.href = `/fornecedores/enderecos?fornecedor=${fornecedor.id}`;
+    navigate(`/fornecedores/enderecos?fornecedor=${fornecedor.id}`);
   };
 
   const handleViewContatos = (fornecedor: Fornecedor) => {
     // Navegar para página de contatos do fornecedor
-    window.location.href = `/fornecedores/contatos?fornecedor=${fornecedor.id}`;
+    navigate(`/fornecedores/contatos?fornecedor=${fornecedor.id}`);
   };
 
   if (showForm) {
@@ -151,8 +154,8 @@ const Fornecedores: React.FC = () => {
 
       {/* Content */}
       {!loading && !error && paginatedFornecedores.length > 0 && (
-        <>
-          {/* Search */}
+      <>
+      {/* Search */}
       <div className="card p-6">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -166,9 +169,23 @@ const Fornecedores: React.FC = () => {
         </div>
       </div>
 
-      {/* Table */}
-      <div className="card">
-        <div className="overflow-x-auto">
+    {/* Table */}
+			<div className="card">
+					{loading ? (
+          <div className="p-8 text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Carregando clientes...</p>
+          </div>
+        ) : error ? (
+          <div className="p-8 text-center">
+            <p className="text-red-600 mb-4">Erro ao carregar clientes: {error}</p>
+            <button onClick={refetch} className="btn btn-primary">
+              Tentar Novamente
+            </button>
+          </div>
+        ) : (
+				<>
+        <div className="overflow-x-visible">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
@@ -272,8 +289,10 @@ const Fornecedores: React.FC = () => {
             </tbody>
           </table>
         </div>
-      </div>
-        </>
+				</>
+				)}
+			</div>
+      </>
       )}
 
       {/* Empty State */}

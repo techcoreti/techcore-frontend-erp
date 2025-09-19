@@ -375,6 +375,8 @@ export interface UpdateCategoriaProdutoDto {
 // ===== PRODUTOS =====
 export interface Produto extends BaseEntity {
 	categoriaId?: string;
+	tipoId?: string;
+	marcaId?: string;
 	nome: string;
 	descricao?: string;
 	ativo: boolean;
@@ -382,6 +384,8 @@ export interface Produto extends BaseEntity {
 
 export interface CreateProdutoDto {
 	categoriaId?: string;
+	tipoId?: string;
+	marcaId?: string;
 	nome: string;
 	descricao?: string;
 	ativo?: boolean;
@@ -389,6 +393,8 @@ export interface CreateProdutoDto {
 
 export interface UpdateProdutoDto {
 	categoriaId?: string;
+	tipoId?: string;
+	marcaId?: string;
 	nome?: string;
 	descricao?: string;
 	ativo?: boolean;

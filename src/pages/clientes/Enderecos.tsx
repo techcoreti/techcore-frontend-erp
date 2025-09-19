@@ -263,16 +263,16 @@ const EnderecosClientes: React.FC = () => {
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Cliente
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Tipo
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Endereço
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       CEP
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Bairro
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Tipo
                     </th>
                     <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Ações
@@ -281,16 +281,22 @@ const EnderecosClientes: React.FC = () => {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {paginatedEnderecos.map((endereco) => {
-                    const cliente = clientes.find(c => c.id === endereco.clienteId);
                     return (
                       <tr key={endereco.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center">
-                            <MapPin className="h-5 w-5 text-gray-400 mr-3" />
-                            <div className="text-sm font-medium text-gray-900">
-                              {cliente?.nomeFantasia || cliente?.nomeRazao || 'Cliente não encontrado'}
-                            </div>
-                          </div>
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      <div>
+                        <div className="font-medium">{endereco.logradouro}</div>
+                        <div className="text-gray-500">
+                          {endereco.numero && `${endereco.numero}, `}
+                          {endereco.municipio}/{endereco.uf}
+                        </div>
+                      </div>
+                    </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {formatCEP(endereco.cep)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {endereco.bairro || '-'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="relative group">
@@ -311,36 +317,24 @@ const EnderecosClientes: React.FC = () => {
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4">
-                          <div className="text-sm text-gray-900">
-                            {endereco.logradouro}, {endereco.numero}
-                            {endereco.complemento && ` - ${endereco.complemento}`}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            {endereco.bairro} - {endereco.municipio}/{endereco.uf}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {formatCEP(endereco.cep)}
-                        </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <DropdownMenu
                             items={[
                               {
                                 label: 'Visualizar',
-                                icon: <Eye className="h-4 w-4" />,
+                                icon: <Eye className="dropdown-icon view" />,
                                 onClick: () => console.log('Visualizar endereço')
                               },
                               {
                                 label: 'Editar',
-                                icon: <Edit className="h-4 w-4" />,
+                                icon: <Edit className="dropdown-icon edit" />,
                                 onClick: () => handleEditEndereco(endereco)
                               },
                               {
                                 label: 'Excluir',
-                                icon: <Trash2 className="h-4 w-4" />,
+                                icon: <Trash2 className="dropdown-icon delete" />,
                                 onClick: () => handleDeleteEndereco(endereco),
-                                destructive: true
+                                className: 'text-red-600 hover:text-red-800'
                               }
                             ]}
                           />

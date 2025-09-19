@@ -11,6 +11,7 @@ export interface ContatoFornecedor {
 	nome: string;
 	email?: string;
 	telefone?: string;
+	whatsapp?: string;
 	tipo: string[];
 }
 
@@ -18,7 +19,9 @@ export interface CreateContatoFornecedorData {
 	nome: string;
 	email?: string;
 	telefone?: string;
+	whatsapp?: string;
 	tipo: string[];
+	ativo: boolean;
 }
 
 class ContatoFornecedorService {

@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { Plus, Search, Edit, Trash2, MapPin, Phone, Eye, Users } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, MapPin, Phone, Users } from 'lucide-react';
 import { useClientes } from '../hooks/useApi';
 import { Cliente, CreateClienteDto, UpdateClienteDto } from '../types/api';
 import ClienteForm from '../components/Forms/ClienteForm';
 import DropdownMenu from '../components/DropdownMenu';
 import Pagination from '../components/Pagination';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 const Clientes: React.FC = () => {
+  const navigate = useNavigate();
   const { 
     clientes, 
     loading, 
@@ -59,6 +61,14 @@ const Clientes: React.FC = () => {
         toast.error('Erro ao excluir cliente');
       }
     }
+  };
+
+  const handleViewEnderecos = (clienteId: string) => {
+    navigate(`/clientes/enderecos?cliente=${clienteId}`);
+  };
+
+  const handleViewContatos = (clienteId: string) => {
+    navigate(`/clientes/contatos?cliente=${clienteId}`);
   };
 
   const handleFormSubmit = async (data: CreateClienteDto | UpdateClienteDto) => {
@@ -129,37 +139,21 @@ const Clientes: React.FC = () => {
 			{paginatedClientes.length > 0 && (
 			<>
       {/* Search and Filters */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Buscar por nome, CPF/CNPJ ou nome fantasia..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="input pl-10 w-full"
-              />
-            </div>
-          </div>
-          <div className="flex space-x-2">
-            <select
-              value={itemsPerPage}
-              onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-              className="input"
-            >
-              <option value={5}>5 por página</option>
-              <option value={10}>10 por página</option>
-              <option value={20}>20 por página</option>
-              <option value={50}>50 por página</option>
-            </select>
-          </div>
-        </div>
+      <div className="card p-6">
+				<div className="relative">
+					<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+					<input
+						type="text"
+						placeholder="Buscar por nome, CPF/CNPJ ou nome fantasia..."
+						value={searchTerm}
+						onChange={(e) => setSearchTerm(e.target.value)}
+						className="input pl-10 w-full"
+					/>
+				</div>
 			</div>
 				
 				{/* Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="card">
         {loading ? (
           <div className="p-8 text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
@@ -174,7 +168,7 @@ const Clientes: React.FC = () => {
           </div>
         ) : (
           <>
-            <div className="overflow-x-auto">
+            <div className="overflow-x-visible">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
@@ -223,37 +217,23 @@ const Clientes: React.FC = () => {
                         <DropdownMenu
                           items={[
                             {
-                              label: 'Visualizar',
-                              icon: <Eye className="h-4 w-4" />,
-                              onClick: () => {
-                                // Implementar visualização
-                                toast('Funcionalidade em desenvolvimento');
-                              }
-                            },
-                            {
                               label: 'Editar',
-                              icon: <Edit className="h-4 w-4" />,
+                              icon: <Edit className="dropdown-icon edit" />,
                               onClick: () => handleEdit(cliente)
                             },
                             {
-                              label: 'Endereços',
-                              icon: <MapPin className="h-4 w-4" />,
-                              onClick: () => {
-                                // Implementar gestão de endereços
-                                toast('Funcionalidade em desenvolvimento');
-                              }
+                              label: 'Ver Endereços',
+                              icon: <MapPin className="dropdown-icon address" />,
+                              onClick: () => handleViewEnderecos(cliente.id)
                             },
                             {
-                              label: 'Contatos',
-                              icon: <Phone className="h-4 w-4" />,
-                              onClick: () => {
-                                // Implementar gestão de contatos
-                                toast('Funcionalidade em desenvolvimento');
-                              }
+                              label: 'Ver Contatos',
+                              icon: <Phone className="dropdown-icon contact" />,
+                              onClick: () => handleViewContatos(cliente.id)
                             },
                             {
                               label: 'Excluir',
-                              icon: <Trash2 className="h-4 w-4" />,
+                              icon: <Trash2 className="dropdown-icon delete" />,
                               onClick: () => handleDelete(cliente.id),
                               className: 'text-red-600 hover:text-red-800'
                             }

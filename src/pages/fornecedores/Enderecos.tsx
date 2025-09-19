@@ -19,6 +19,20 @@ const EnderecosFornecedores: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
 
+  // Verificar se há parâmetro de fornecedor na URL
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const fornecedorIdFromUrl = urlParams.get('fornecedor');
+    
+    if (fornecedorIdFromUrl && fornecedores.length > 0) {
+      const fornecedor = fornecedores.find(f => f.id === fornecedorIdFromUrl);
+      if (fornecedor) {
+        setSelectedFornecedorId(fornecedorIdFromUrl);
+        fetchEnderecos(fornecedorIdFromUrl);
+      }
+    }
+  }, [fornecedores]);
+
   // Função para buscar endereços de um fornecedor específico
   const fetchEnderecos = async (fornecedorId: string) => {
     if (!fornecedorId) return;
@@ -177,13 +191,13 @@ const EnderecosFornecedores: React.FC = () => {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Fornecedor
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Endereço
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   CEP
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Bairro
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Tipo
@@ -209,26 +223,20 @@ const EnderecosFornecedores: React.FC = () => {
               ) : (
                 paginatedEnderecos.map((endereco) => (
                   <tr key={endereco.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <MapPin className="h-5 w-5 text-gray-400 mr-3" />
-                        <div className="text-sm font-medium text-gray-900">
-                          {getFornecedorNome(endereco.fornecedorId)}
-                        </div>
-                      </div>
-                    </td>
                     <td className="px-6 py-4 text-sm text-gray-900">
                       <div>
                         <div className="font-medium">{endereco.logradouro}</div>
                         <div className="text-gray-500">
                           {endereco.numero && `${endereco.numero}, `}
-                          {endereco.bairro && `${endereco.bairro}, `}
                           {endereco.municipio}/{endereco.uf}
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {formatCEP(endereco.cep)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {endereco.bairro || '-'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="relative group">

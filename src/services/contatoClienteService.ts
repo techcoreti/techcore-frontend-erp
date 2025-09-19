@@ -12,6 +12,7 @@ export interface ContatoCliente {
 	nome: string;
 	email?: string;
 	telefone?: string;
+	whatsapp?: string;
 	tipo: string[];
 }
 
@@ -20,6 +21,7 @@ export interface CreateContatoClienteData {
 	nome: string;
 	email?: string;
 	telefone?: string;
+	whatsapp?: string;
 	tipo: string[];
 }
 

@@ -17,6 +17,7 @@ interface EnderecoFornecedorFormData {
   pais: string;
   paisCodigo: string;
   tipo: string[];
+  ativo: boolean;
 }
 
 interface EnderecoFornecedorFormProps {
@@ -48,20 +49,21 @@ const EnderecoFornecedorForm: React.FC<EnderecoFornecedorFormProps> = ({
     }
   };
 
-  const { register, handleSubmit, formState: { errors }, setValue, setError, clearErrors } = useForm<EnderecoFornecedorFormData>({
+  const { register, handleSubmit, formState: { errors }, setValue, setError, clearErrors, reset, watch } = useForm<EnderecoFornecedorFormData>({
     defaultValues: {
       tipo: enderecoToEdit?.tipo || [],
-      pais: enderecoToEdit?.pais || 'Brasil',
-      paisCodigo: enderecoToEdit?.paisCodigo || '1058',
-      municipioCodigo: enderecoToEdit?.municipioCodigo || '',
-      ufCodigo: enderecoToEdit?.ufCodigo || '',
-      cep: enderecoToEdit?.cep ? formatCEP(enderecoToEdit.cep) : '',
-      logradouro: enderecoToEdit?.logradouro || '',
-      numero: enderecoToEdit?.numero || '',
-      complemento: enderecoToEdit?.complemento || '',
-      bairro: enderecoToEdit?.bairro || '',
-      municipio: enderecoToEdit?.municipio || '',
-      uf: enderecoToEdit?.uf || ''
+      pais: enderecoToEdit?.pais || undefined,
+      paisCodigo: enderecoToEdit?.paisCodigo || undefined,
+      municipioCodigo: enderecoToEdit?.municipioCodigo || undefined,
+      ufCodigo: enderecoToEdit?.ufCodigo || undefined,
+      cep: enderecoToEdit?.cep ? formatCEP(enderecoToEdit.cep) : undefined,
+      logradouro: enderecoToEdit?.logradouro || undefined,
+      numero: enderecoToEdit?.numero || undefined,
+      complemento: enderecoToEdit?.complemento || undefined,
+      bairro: enderecoToEdit?.bairro || undefined,
+      municipio: enderecoToEdit?.municipio || undefined,
+      uf: enderecoToEdit?.uf || undefined,
+      ativo: (enderecoToEdit as any)?.ativo ?? true
     }
   });
 
@@ -81,21 +83,19 @@ const EnderecoFornecedorForm: React.FC<EnderecoFornecedorFormProps> = ({
       : [...selectedTipos, tipoValue];
     
     setSelectedTipos(newSelectedTipos);
-		setValue('tipo', newSelectedTipos);
+    setValue('tipo', newSelectedTipos);
 
-		if(newSelectedTipos.length < 1) {
-			setError('tipo', { type: 'manual', message: 'Selecione pelo menos um tipo de endereço' });
-		} else {
-			clearErrors('tipo');
-		}
-	
+    if(newSelectedTipos.length < 1) {
+      setError('tipo', { type: 'manual', message: 'Selecione pelo menos um tipo de endereço' });
+    } else {
+      clearErrors('tipo');
+    }
   };
 
   const handleRemoveTipo = (tipoValue: string) => {
     const newSelectedTipos = selectedTipos.filter(t => t !== tipoValue);
     setSelectedTipos(newSelectedTipos);
-		setValue('tipo', newSelectedTipos);	
- 
+    setValue('tipo', newSelectedTipos);	
   };
 
   // Fechar dropdown ao clicar fora
@@ -120,8 +120,8 @@ const EnderecoFornecedorForm: React.FC<EnderecoFornecedorFormProps> = ({
     setValue('cep', formattedValue);
   };
 
-	const onSubmit = async (data: EnderecoFornecedorFormData) => {
-		setLoading(true);
+  const onSubmit = async (data: EnderecoFornecedorFormData) => {
+    setLoading(true);
     try {
       const enderecoData = {
         cep: removeCEPMask(data.cep),
@@ -135,7 +135,8 @@ const EnderecoFornecedorForm: React.FC<EnderecoFornecedorFormProps> = ({
         ufCodigo: data.ufCodigo,
         pais: data.pais,
         paisCodigo: data.paisCodigo,
-        tipo: data.tipo
+        tipo: data.tipo,
+        ativo: data.ativo
       };
 
       // Chamada para a API real
@@ -160,116 +161,155 @@ const EnderecoFornecedorForm: React.FC<EnderecoFornecedorFormProps> = ({
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
-
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        {/* Tipo de Endereço */}
-        <div className="rounded-lg border border-gray-200 bg-white p-4">
-          <div className="mb-4">
-            <h3 className="text-sm font-medium text-gray-900">Tipo de Endereço <span className="text-red-500">*</span></h3>
-            <p className="text-xs text-gray-500">Selecione o(s) tipo(s) de endereço</p>
+    <div className="max-w-[50rem] mx-auto">
+      <div className="bg-white rounded-lg shadow-lg p-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          {/* Header */}
+          <div className="text-center mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">Informações do Endereço</h2>
+            <p className="text-sm text-gray-600 mt-1">Todos os campos marcados com <span className="text-red-500">*</span> são obrigatórios</p>
           </div>
-          
-          <div className="relative" ref={dropdownRef}>
-            <div 
-							{...register('tipo', { required: 'Tipo de endereço é obrigatório' })}
-              className={`w-full px-3 py-2 border rounded-md shadow-sm cursor-pointer flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary ${
-                errors.tipo ? 'border-red-300' : 'border-gray-300'
-              }`}
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            >
-              <div className="flex flex-wrap gap-1 flex-1">
-                {selectedTipos.length > 0 ? (
-                  selectedTipos.map(tipo => {
-										const tipoLabel = tiposOptions.find(t => t.value === tipo)?.label;
-										
-                    return (
-                      <span 
-                        key={tipo}
-                        className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-primary/10 text-primary border border-primary/20"
-                      >
-                        {tipoLabel}
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleRemoveTipo(tipo);
-                          }}
-                          className="ml-1 hover:text-primary/80"
-                        >
-                          <X className="h-2.5 w-2.5" />
-                        </button>
-                      </span>
-                    );
-                  })
-                ) : (
-                  <span className="text-gray-500 text-sm">Selecione os tipos...</span>
-                )}
-              </div>
-              <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
-            </div>
 
-            {isDropdownOpen && (
-              <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg">
-                <div className="p-2 border-b">
-                  <input
-                    type="text"
-                    placeholder="Buscar tipos..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary"
-                    onClick={(e) => e.stopPropagation()}
-                  />
+          {/* Status do Endereço do Fornecedor */}
+          <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                  <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
                 </div>
-                
-                <div className="max-h-40 overflow-y-auto">
-                  {filteredTipos.map(tipo => (
-                    <div
-                      key={tipo.value}
-                      className="flex items-center px-3 py-2 hover:bg-gray-50 cursor-pointer"
-                      onClick={() => handleTipoToggle(tipo.value)}
-                    >
-                      <div className="flex items-center">
-                        <div className={`w-3.5 h-3.5 border-2 rounded mr-2 flex items-center justify-center ${
-                          selectedTipos.includes(tipo.value) 
-                            ? 'bg-primary border-primary' 
-                            : 'border-gray-300'
-                        }`}>
-                          {selectedTipos.includes(tipo.value) && (
-                            <Check className="h-2.5 w-2.5 text-white" />
-                          )}
-                        </div>
-                        <span className="text-xs text-gray-700">{tipo.label}</span>
-                      </div>
-                    </div>
-                  ))}
-                  {filteredTipos.length === 0 && (
-                    <div className="px-3 py-2 text-xs text-gray-500">
-                      Nenhum tipo encontrado
-                    </div>
+                <div>
+                  <h3 className="text-sm font-medium text-gray-900">Status do Endereço do Fornecedor</h3>
+                  <p className="text-xs text-gray-500">Define se o endereço do fornecedor está ativo no sistema</p>
+                </div>
+              </div>
+              <div className="flex items-center">
+                <button
+                  type="button"
+                  onClick={() => setValue('ativo', !watch('ativo'))}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                    watch('ativo') ? 'bg-blue-600' : 'bg-gray-200'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      watch('ativo') ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+                <span className="ml-3 text-sm font-medium text-gray-900">
+                  {watch('ativo') ? 'Ativo' : 'Inativo'}
+                </span>
+              </div>
+            </div>
+					</div>
+					
+          {/* Tipo de Endereço */}
+          <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+            <h3 className="text-sm font-medium text-gray-900">Tipo de Endereço</h3>
+            <p className="text-xs text-gray-500 mb-1">Selecione o(s) tipo(s) de endereço</p>
+            
+            <div className="relative" ref={dropdownRef}>
+              <div 
+                className={`w-full px-4 py-3 border rounded-lg cursor-pointer flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  errors.tipo ? 'border-red-300' : 'border-gray-300'
+                }`}
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              >
+                <div className="flex flex-wrap gap-1 flex-1">
+                  {selectedTipos.length > 0 ? (
+                    selectedTipos.map(tipo => {
+                      const tipoLabel = tiposOptions.find(t => t.value === tipo)?.label;
+                      
+                      return (
+                        <span 
+                          key={tipo}
+                          className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800 border border-blue-200"
+                        >
+                          {tipoLabel}
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemoveTipo(tipo);
+                            }}
+                            className="ml-1 hover:text-blue-600"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </span>
+                      );
+                    })
+                  ) : (
+                    <span className="text-gray-500 text-sm">Selecione os tipos...</span>
                   )}
                 </div>
+                <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
               </div>
+
+              {isDropdownOpen && (
+                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+                  <div className="p-2 border-b">
+                    <input
+                      type="text"
+                      placeholder="Buscar tipos..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </div>
+                  
+                  <div className="max-h-40 overflow-y-auto">
+                    {filteredTipos.map(tipo => (
+                      <div
+                        key={tipo.value}
+                        className="flex items-center px-3 py-2 hover:bg-gray-50 cursor-pointer"
+                        onClick={() => handleTipoToggle(tipo.value)}
+                      >
+                        <div className="flex items-center">
+                          <div className={`w-4 h-4 border-2 rounded mr-3 flex items-center justify-center ${
+                            selectedTipos.includes(tipo.value) 
+                              ? 'bg-blue-600 border-blue-600' 
+                              : 'border-gray-300'
+                          }`}>
+                            {selectedTipos.includes(tipo.value) && (
+                              <Check className="h-3 w-3 text-white" />
+                            )}
+                          </div>
+                          <span className="text-sm text-gray-700">{tipo.label}</span>
+                        </div>
+                      </div>
+                    ))}
+                    {filteredTipos.length === 0 && (
+                      <div className="px-3 py-2 text-sm text-gray-500">
+                        Nenhum tipo encontrado
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+            {errors.tipo && (
+              <p className="mt-2 text-xs text-red-600">{errors.tipo.message}</p>
             )}
           </div>
-          {errors.tipo && (
-            <p className="mt-2 text-xs text-red-600">{errors.tipo.message}</p>
-          )}
-        </div>
 
-        {/* Informações do Endereço */}
-        <div className="rounded-lg border border-gray-200 bg-white p-4">
-          <div className="mb-4">
-            <h3 className="text-sm font-medium text-gray-900">Informações do Endereço</h3>
-            <p className="text-xs text-gray-500">Dados básicos do endereço</p>
-          </div>
-          
-          <div className="grid grid-cols-1 gap-4">
+          {/* Campos do Formulário */}
+          <div className="space-y-4 bg-gray-50 rounded-lg p-4 border border-gray-200">
             {/* CEP, Logradouro e Número */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
               <div className="md:col-span-2">
-                <label className="block text-xs font-medium text-gray-700 mb-1">
-                  CEP <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <div className="flex items-center">
+                    <svg className="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    CEP <span className="text-red-500">*</span>
+                  </div>
                 </label>
                 <input
                   {...register('cep', {
@@ -281,119 +321,157 @@ const EnderecoFornecedorForm: React.FC<EnderecoFornecedorFormProps> = ({
                   })}
                   type="text"
                   placeholder="00000-000"
-                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm ${
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm ${
                     errors.cep ? 'border-red-300' : 'border-gray-300'
                   }`}
                   onChange={handleCEPChange}
                   maxLength={9}
                 />
+                {errors.cep && (
+                  <p className="mt-1 text-xs text-red-600">{errors.cep.message}</p>
+                )}
               </div>
               <div className="md:col-span-8">
-                <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Logradouro <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <div className="flex items-center">
+                    <svg className="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                    Logradouro <span className="text-red-500">*</span>
+                  </div>
                 </label>
                 <input
                   {...register('logradouro', { required: 'Logradouro é obrigatório' })}
                   type="text"
                   placeholder="Rua, Avenida, etc."
-                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm ${
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm ${
                     errors.logradouro ? 'border-red-300' : 'border-gray-300'
                   }`}
                 />
+                {errors.logradouro && (
+                  <p className="mt-1 text-xs text-red-600">{errors.logradouro.message}</p>
+                )}
               </div>
               <div className="md:col-span-2">
-                <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Número <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <div className="flex items-center">
+                    <svg className="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
+                    </svg>
+                    Número <span className="text-red-500">*</span>
+                  </div>
                 </label>
                 <input
                   {...register('numero', { required: 'Número é obrigatório' })}
                   type="text"
                   placeholder="12345"
-                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm ${
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm ${
                     errors.numero ? 'border-red-300' : 'border-gray-300'
                   }`}
                 />
+                {errors.numero && (
+                  <p className="mt-1 text-xs text-red-600">{errors.numero.message}</p>
+                )}
               </div>
             </div>
 
-            {/* Complemento */}
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">
-                Complemento
-              </label>
-              <input
-                {...register('complemento')}
-                type="text"
-                placeholder="Apartamento, sala, etc."
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Localização */}
-        <div className="rounded-lg border border-gray-200 bg-white p-4">
-          <div className="mb-4">
-            <h3 className="text-sm font-medium text-gray-900">Localização</h3>
-            <p className="text-xs text-gray-500">Informações de localização geográfica</p>
-          </div>
-          
-          <div className="grid grid-cols-1 gap-4">
-            {/* Bairro, Município e Código do Município */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
-              <div className="md:col-span-4">
-                <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Bairro <span className="text-red-500">*</span>
+            {/* Complemento e Bairro */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+              <div className="md:col-span-5">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <div className="flex items-center">
+                    <svg className="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                    Complemento
+                  </div>
+                </label>
+                <input
+                  {...register('complemento')}
+                  type="text"
+                  placeholder="Apartamento, sala, etc."
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                />
+              </div>
+              <div className="md:col-span-7">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <div className="flex items-center">
+                    <svg className="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    Bairro <span className="text-red-500">*</span>
+                  </div>
                 </label>
                 <input
                   {...register('bairro', { required: 'Bairro é obrigatório' })}
                   type="text"
                   placeholder="Nome do bairro"
-                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm ${
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm ${
                     errors.bairro ? 'border-red-300' : 'border-gray-300'
                   }`}
                 />
+                {errors.bairro && (
+                  <p className="mt-1 text-xs text-red-600">{errors.bairro.message}</p>
+                )}
               </div>
-              <div className="md:col-span-6">
-                <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Município <span className="text-red-500">*</span>
+            </div>
+
+            {/* Município, Código Município, UF e Código UF */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+              <div className="md:col-span-5">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <div className="flex items-center">
+                    <svg className="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                    Município <span className="text-red-500">*</span>
+                  </div>
                 </label>
                 <input
                   {...register('municipio', { required: 'Município é obrigatório' })}
                   type="text"
                   placeholder="Nome do município"
-                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm ${
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm ${
                     errors.municipio ? 'border-red-300' : 'border-gray-300'
                   }`}
                 />
+                {errors.municipio && (
+                  <p className="mt-1 text-xs text-red-600">{errors.municipio.message}</p>
+                )}
               </div>
-              <div className="md:col-span-2">
-                <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Cod. Município
+              <div className="md:col-span-3">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <div className="flex items-center">
+                    <svg className="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
+                    </svg>
+                    Cód. Município
+                  </div>
                 </label>
                 <input
-                  {...register('municipioCodigo', { required: 'Código do município é obrigatório' })}
+                  {...register('municipioCodigo')}
                   type="text"
-                  placeholder="Ex: 3550308"
-                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm ${errors.municipioCodigo ? 'border-red-300' : 'border-gray-300'
-                  }`}
+                  placeholder="3550308"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
                 />
               </div>
-            </div>
-
-            {/* UF, Código da UF e País */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
               <div className="md:col-span-2">
-                <label className="block text-xs font-medium text-gray-700 mb-1">
-                  UF <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <div className="flex items-center">
+                    <svg className="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    UF <span className="text-red-500">*</span>
+                  </div>
                 </label>
                 <select
                   {...register('uf', { required: 'UF é obrigatória' })}
-                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm ${
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm ${
                     errors.uf ? 'border-red-300' : 'border-gray-300'
                   }`}
                 >
-                  <option value="">Selecione a UF</option>
+                  <option value="">Selecione</option>
                   <option value="AC">AC</option>
                   <option value="AL">AL</option>
                   <option value="AP">AP</option>
@@ -422,65 +500,88 @@ const EnderecoFornecedorForm: React.FC<EnderecoFornecedorFormProps> = ({
                   <option value="SE">SE</option>
                   <option value="TO">TO</option>
                 </select>
+                {errors.uf && (
+                  <p className="mt-1 text-xs text-red-600">{errors.uf.message}</p>
+                )}
               </div>
               <div className="md:col-span-2">
-                <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Código da UF
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <div className="flex items-center">
+                    <svg className="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
+                    </svg>
+                    UF Código
+                  </div>
                 </label>
                 <input
-                  {...register('ufCodigo', { required: 'Código da UF é obrigatório' })}
+                  {...register('ufCodigo')}
                   type="text"
-                  placeholder="Ex: 35"
-                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm ${
-                    errors.ufCodigo ? 'border-red-300' : 'border-gray-300'
-                  }`}
+                  placeholder="35"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
                 />
               </div>
-              <div className="md:col-span-6">
-                <label className="block text-xs font-medium text-gray-700 mb-1">
-                  País <span className="text-red-500">*</span>
+            </div>
+
+            {/* País e Código do País */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+              <div className="md:col-span-8">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <div className="flex items-center">
+                    <svg className="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    País
+                  </div>
                 </label>
                 <input
-                  {...register('pais', { required: 'País é obrigatório' })}
+                  {...register('pais')}
                   type="text"
-                  placeholder="Nome do país"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm"
+                  placeholder="Brasil"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
                 />
               </div>
-              <div className="md:col-span-2">
-                <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Código do País
+              <div className="md:col-span-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <div className="flex items-center">
+                    <svg className="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
+                    </svg>
+                    Cód. País
+                  </div>
                 </label>
                 <input
-                  {...register('paisCodigo', { required: 'Código do país é obrigatório' })}
+                  {...register('paisCodigo')}
                   type="text"
-                  placeholder="Ex: 1058"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm"
+                  placeholder="1058"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
                 />
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Botões */}
-        <div className="flex justify-end space-x-2 pt-4 border-t border-gray-200">
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors text-sm"
-            disabled={loading}
-          >
-            Cancelar
-          </button>
-          <button
-            type="submit"
-            className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-            disabled={loading}
-          >
-            {loading ? 'Salvando...' : (enderecoToEdit ? 'Atualizar' : 'Salvar')}
-          </button>
-        </div>
-      </form>
+          {/* Botões */}
+          <div className="flex justify-end space-x-2 pt-4 border-t border-gray-200">
+            <button
+              type="button"
+              onClick={() => {
+                reset();
+                onClose();
+              }}
+              className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm"
+              disabled={loading}
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+              disabled={loading}
+            >
+              {loading ? 'Salvando...' : (enderecoToEdit ? 'Atualizar' : 'Salvar')}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
